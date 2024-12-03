@@ -1,7 +1,7 @@
 import argparse
-from langchain.vectorstores.chroma import Chroma
+from langchain_chroma import Chroma
 from langchain.prompts import ChatPromptTemplate
-from langchain_community.llms.ollama import Ollama
+from langchain_ollama import OllamaLLM
 
 from embedding import get_embedding_function
 
@@ -10,8 +10,8 @@ CHROMA_PATH = "chroma"
 INSTRUCTIONS = """
 You are a homework assistant tool.
 You must provide the most relevant steps in order to complete the assignment. 
-Do this in a simplified and easy-to-understand manner. Retrieve the most
-relevant information.
+Do this in a easy-to-understand manner. You must outline EVERY step needed, 
+even if this results in long output. Use relevant information from the document(s).
 """
 
 PROMPT_TEMPLATE = """
@@ -32,6 +32,7 @@ def main():
     args = parser.parse_args()
     query_text = args.query_text
     query_rag(query_text)
+#    response()
 
 def response():
     return query_rag(INSTRUCTIONS)
@@ -49,7 +50,7 @@ def query_rag(query_text: str):
     prompt = prompt_template.format(context=context_text, question=query_text)
     # print(prompt)
 
-    model = Ollama(model="llama3.1:8b")
+    model = OllamaLLM(model="llama3.1:8b")
     response_text = model.invoke(prompt)
 
     sources = [doc.metadata.get("id", None) for doc, _score in results]
